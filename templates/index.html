@@ -281,29 +281,30 @@ https://www.tooplate.com/view/2113-earth
         <div class="slide" id="4" style="background:url({{contact_bg.image.url}});">
             <div class="content fourth-content">
                 <div class="container-fluid">
-                    <form id="contact" action="" method="post">
+                    <form id="contact" action="#" method="post">
+                      {% csrf_token %}
                         <div class="row">
                           <div class="col-md-12">
                             <h2>Say Hello!</h2>
                           </div>
                           <div class="col-md-6">
                             <fieldset>
-                              <input name="name" type="text" class="form-control" id="name" placeholder="Your name..." required="">
+                              <input name="name" type="text" class="form-control" id="name" placeholder="Your name..." required="" v-model='name'>
                             </fieldset>
                           </div>
                           <div class="col-md-6">
                             <fieldset>
-                              <input name="email" type="text" class="form-control" id="email" placeholder="Your email..." required="">
+                              <input name="email" type="text" class="form-control" id="email" placeholder="Your email..." required="" v-model='email'>
                             </fieldset>
                           </div>
                           <div class="col-md-12">
                             <fieldset>
-                              <textarea name="message" rows="6" class="form-control" id="message" placeholder="Your message..." required=""></textarea>
+                              <textarea name="message" rows="6" class="form-control" id="message" placeholder="Your message..." required="" v-model='message'></textarea>
                             </fieldset>
                           </div>
                           <div class="col-md-12">
                             <fieldset>
-                              <button type="submit" id="form-submit" class="button">Send Now</button>
+                              <button type="submit" id="form-submit" class="button" @click.prevent='postData'>Send Now</button>
                             </fieldset>
                         </div>
                     </form>
@@ -322,6 +323,9 @@ https://www.tooplate.com/view/2113-earth
     <script src="{% static 'assets/js/owl.js' %}"></script>
     <script src="{% static 'assets/js/accordations.js' %}"></script>
     <script src="{% static 'assets/js/main.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js" integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script type="text/javascript">
         $(document).ready(function() {
@@ -359,6 +363,81 @@ https://www.tooplate.com/view/2113-earth
                 log: function() { }
             };
         }
+    </script>
+
+    <script>
+      new Vue(
+        {
+          el:'#contact',
+          data:{
+            name:'',
+            email:'',
+            message:'',
+            url:"{% url 'checkup' %}"
+          },
+          methods:{
+            postData(){
+              if (this.name === '' || this.email === '' || this.message === ''){
+                swal.fire({
+                  icon:'error',
+                  text:'Veuillez remplir les champs vides',
+                  showConfirmButton:false,
+                  timer:2000,
+                })
+              }
+              else if (!/[A-Za-z'éèöïäëû ]+/.test(this.name)){
+                swal.fire({
+                  icon:'error',
+                  text:'Veuillez saisir un nom valide',
+                  showConfirmButton:false,
+                  timer:2000,
+                })
+              }
+              else if (!/(\w\.?)+@(\w\.?)+\.[A-Za-z]{2,3}/.test(this.email)){
+                swal.fire({
+                  icon:'error',
+                  text:'Veuillez saisir un email valide',
+                  showConfirmButton:false,
+                  timer:2000,
+                })
+              }
+              else{
+                axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+                axios.defaults.xsrfCookieName = 'csrftoken'
+                
+                let form = new FormData()
+
+                form.append('name', this.name)
+                form.append('email', this.email)
+                form.append('message', this.message)
+                /*
+                axios.post(this.url, form).then(() => {
+                  swal.fire({
+                    icon:'success',
+                    text:'Vous avez bien rempli le formulaire',
+                    showConfirmButton:false,
+                    timer:2000,
+                  }).then(() => {
+                    window.location.reload()
+                  })
+                }).catch((e) => {
+                  console.log(e)
+                })
+                */
+                swal.fire({
+                  icon:'success',
+                  text:'Vous avez bien rempli le formulaire',
+                  showConfirmButton:false,
+                  timer:2000,
+                }).then(() => {
+                  window.location.reload()
+                })
+              }
+            }
+          },
+          delimiters: ['%{', '}']
+        }
+      )
     </script>
 
   </body>

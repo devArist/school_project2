@@ -17,3 +17,6 @@ def home(request):
         status=True).first()
     galleries = service_models.Gallery.objects.filter(status=True)
     return render(request, 'index.html', locals())
+
+def checkup(request):
+    pass
