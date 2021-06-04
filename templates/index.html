@@ -410,28 +410,30 @@ https://www.tooplate.com/view/2113-earth
                 form.append('name', this.name)
                 form.append('email', this.email)
                 form.append('message', this.message)
-                /*
-                axios.post(this.url, form).then(() => {
-                  swal.fire({
-                    icon:'success',
-                    text:'Vous avez bien rempli le formulaire',
-                    showConfirmButton:false,
-                    timer:2000,
-                  }).then(() => {
-                    window.location.reload()
-                  })
+                
+                axios.post(this.url, form).then((response) => {
+                  if (response.data.success){
+                    swal.fire({
+                      icon:'success',
+                      text:response.data.text,
+                      showConfirmButton:false,
+                      timer:2000,
+                    }).then(()=>{
+                      window.location.reload()
+                    })
+                  }
+                  else {
+                    swal.fire({
+                      icon:'error',
+                      text:response.data.text,
+                      showConfirmButton:false,
+                      timer:2000,
+                    })
+                  }
                 }).catch((e) => {
                   console.log(e)
                 })
-                */
-                swal.fire({
-                  icon:'success',
-                  text:'Vous avez bien rempli le formulaire',
-                  showConfirmButton:false,
-                  timer:2000,
-                }).then(() => {
-                  window.location.reload()
-                })
+                
               }
             }
           },
